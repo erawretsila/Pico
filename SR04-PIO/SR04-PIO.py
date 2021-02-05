@@ -6,7 +6,7 @@ from machine import Pin
 @asm_pio(set_init=(PIO.IN_LOW),sideset_init=PIO.OUT_LOW)
 def SR04():
     label ('start')
-    wait(0,pin,0)              #check echo pin is low befor starting
+    wait(0,pin,0)              #check echo pin is low before starting
     mov(x,null) .side(1)[7]    #set trigger pin high & clear x register
     nop() .side(0)             #return trigger to low
     wait(1,pin,0)              #wait for start of echo pulse
@@ -18,9 +18,9 @@ def SR04():
     mov(isr, invert(x))        #invert x & prepare to output
     push()                     #output to Fifo
     label ('exit')
-    jmp ('start')              #echo has tmed out, return to start.
+    jmp ('start')              #echo has timed out, return to start.
     
-#ecample usage    
+#example usage    
 sm=rp2.StateMachine(1,SR04,freq=500000,set_base=Pin(0),sideset_base=Pin(1))
 sm.active(1)
 
