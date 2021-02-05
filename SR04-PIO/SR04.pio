@@ -1,0 +1,19 @@
+.program SR04
+
+;ping the trigge bin on a sr04 & then return a count representing the duration of the echo pulse
+
+start:
+    wait 0 pin 0                ;check echo pin is low befor starting
+    mov x,null side 0 [7]       ;set trigger pin high & clear x register
+    nop side 0                  ;return trigger to low
+    wait 1 pin 0                ;wait for start of echo pulse
+countdown:
+    jmp x-- skip                ;decrement x reg
+skip:             
+    jmp !x exit                ;exit if x 0 ;time out
+    jmp pin countdown         ;ping still high continue counting
+    mov isr ~x                  ;invert x & prepare to output
+    push                        ;output to Fifo
+exit:
+    jmp start                   ;echo has timed out, return to start.
+ 
