@@ -10,3 +10,6 @@ robotics projects which only need rough near/far indicators
 if run at faster speeds or where acurate readings are essential 
 (digital tape measure) a scaling factor will need to be 
 applied & calibrated
+
+The .pio & assembled header file for c/c++ programs HAVE NOT BEEN TESTED
+
