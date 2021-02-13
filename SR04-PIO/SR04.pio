@@ -1,19 +1,21 @@
 .program SR04
 
 ;ping the trigger bin on a sr04 & then return a count representing the duration of the echo pulse
+'return 0xFFFFFFFF if no sensor ping detected.
 
 start:
     wait 0 pin 0                ;check echo pin is low before starting
     mov x,null side 0 [7]       ;set trigger pin high & clear x register
-    nop side 0                  ;return trigger to low
-    wait 1 pin 0                ;wait for start of echo pulse
+    mov y null 0                  ;return trigger to low
+wait:
+    jmp pin countdown           ;start count for trigger pulse
+    jmp t-- wait                ;loop until y=0
+    jmp exit                    ;exit
 countdown:
     jmp x-- skip                ;decrement x reg
 skip:             
     jmp !x exit                ;exit if x 0 ;time out
     jmp pin countdown         ;ping still high continue counting
+exit:
     mov isr ~x                  ;invert x & prepare to output
     push                        ;output to Fifo
-exit:
-    jmp start                   ;echo has timed out, return to start.
- 
