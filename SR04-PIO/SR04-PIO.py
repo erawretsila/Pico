@@ -17,10 +17,10 @@ def SR04():
     label('skip')             
     jmp(x,'exit')              #exit if x 0 #time out
     jmp(pin,'countdown')       #ping still high continue counting
-    label ('exit')
     mov(isr, invert(x))        #invert x & prepare to output
     push()                     #output to Fifo
-    
+    label ('exit')
+    jmp('start')
 #example usage    
 sm=rp2.StateMachine(1,SR04,freq=500000,set_base=Pin(0),sideset_base=Pin(1))
 sm.active(1)

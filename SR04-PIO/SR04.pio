@@ -16,6 +16,7 @@ countdown:
 skip:             
     jmp !x exit                ;exit if x 0 ;time out
     jmp pin countdown         ;ping still high continue counting
-exit:
     mov isr ~x                  ;invert x & prepare to output
     push                        ;output to Fifo
+exit:
+    jmp start
