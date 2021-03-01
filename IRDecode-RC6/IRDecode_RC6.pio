@@ -1,0 +1,48 @@
+# IRDecode.pio
+# (c) Alsier J Ware
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#  
+#  
+
+.programm
+
+start:
+	pull				;set number of bits to input
+	mov y osr			;set count in y reg
+	wait 0 pin 0		; wait for leading low pulse
+	wait 1 pin 0 [7]	;wait for return high then delay for mid point of next bit(assume bit was zero!)
+low:					;process a 0 bit
+    jmp y-- cont		;dec bits left to receive
+    jmp jmp exit		;all done exit
+cont:
+    wait 0 pin 0		;wait for input to go low
+    set x 0				; 
+    in x 1  [7]			;  sift in a 0 & delay to mid of next bit
+    jmp pin 'low'		;  if high then next bit is a zero
+high:					;process a 1 bit
+    jmp y-- conth		;dec bits left to receive?
+    jmp exit 			;exit
+conth:
+    wait(1,pin,0)		;wait for input to go high 
+    set(x,1)
+    in_(x,1) [7]        ;shift in a 1
+    jmp(pin,'low')      ;if high then next bit is a 0
+    jmp('high')			;go to process a 1 bit
+exit:		
+    push()				;write data
+    irq(noblock,rel(0))	;trigger irq
+    jmp('start')		;probably redundant	

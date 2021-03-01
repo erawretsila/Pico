@@ -1,0 +1,40 @@
+/*# SR04PIO.py
+# (c) Alsier J Ware
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#  
+#  
+*/
+.program SR04
+
+;ping the trigger bin on a sr04 & then return a count representing the duration of the echo pulse
+'return 0xFFFFFFFF if no sensor ping detected.
+
+start:
+    set y,31 side 0 [7]      ;set trigger high & delay for pulse width
+    set x 0 [7]               ;set x low - continue delay
+    jmp y-- wait side 0       ;clear pulse _ dec count
+wait:
+    jmp pin echo              ;wait for start of echo or time out.
+    jmp y-- wait [7]          ;wait again (delay 7 cycles total =30*7=210 cycles
+echo:
+    jmp x-- skip               ;count down
+skip:
+    jmp pin echo               ;continue countdown if echo high
+    mov isr ~x                 ; invert x & move to input reg
+    irq noblock 0              ;generate interupt
+    push                       ;output
+    
